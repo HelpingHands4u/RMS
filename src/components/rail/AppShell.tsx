@@ -21,17 +21,6 @@ const PASSENGER_NAV: NavItem[] = [
 
 const ADMIN_NAV: NavItem[] = [
   { to: "/admin", label: "Overview", icon: <Shield className="h-4 w-4" />, exact: true },
-  { to: "/admin/analytics", label: "Analytics", icon: <BarChart3 className="h-4 w-4" /> },
-  { to: "/admin/trains", label: "Trains", icon: <TrainFront className="h-4 w-4" /> },
-  { to: "/admin/stations", label: "Stations", icon: <MapPin className="h-4 w-4" /> },
-  { to: "/admin/routes", label: "Routes & Stops", icon: <RouteIcon className="h-4 w-4" /> },
-  { to: "/admin/schedules", label: "Schedules", icon: <CalendarClock className="h-4 w-4" /> },
-  { to: "/admin/coaches", label: "Coaches", icon: <Rows3 className="h-4 w-4" /> },
-  { to: "/admin/seats", label: "Seats", icon: <Armchair className="h-4 w-4" /> },
-  { to: "/admin/reservations", label: "Reservations", icon: <ClipboardList className="h-4 w-4" /> },
-  { to: "/admin/passengers", label: "Passengers", icon: <UserSquare className="h-4 w-4" /> },
-  { to: "/admin/payments", label: "Payments", icon: <CreditCard className="h-4 w-4" /> },
-  { to: "/admin/cancellations", label: "Cancellations", icon: <Ban className="h-4 w-4" /> },
 ];
 
 function NavList({ items, onNavigate }: { items: NavItem[]; onNavigate?: () => void }) {

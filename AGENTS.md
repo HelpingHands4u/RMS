@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+- Firebase (Firestore + Auth) is the data layer; all DB access goes through src/services/*, auth only via src/services/auth.service.ts + useAuth(). Why: viva-explainable layering, swappable config.
+- Seat double-booking is prevented by deterministic seatLocks/{scheduleId}_{seatId} docs created in a Firestore transaction. Why: atomic and enforceable in rules.
