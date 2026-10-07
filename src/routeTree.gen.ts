@@ -16,9 +16,12 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedPassengersRouteImport } from './routes/_authenticated/passengers'
+import { Route as AuthenticatedBookScheduleIdRouteImport } from './routes/_authenticated/book.$scheduleId'
+import { Route as AuthenticatedPaymentReservationIdRouteImport } from './routes/_authenticated/payment.$reservationId'
 import { Route as AuthenticatedSearchIndexRouteImport } from './routes/_authenticated/search/index'
 import { Route as AuthenticatedSearchResultsRouteImport } from './routes/_authenticated/search/results'
 import { Route as AuthenticatedTrainsIdRouteImport } from './routes/_authenticated/trains.$id'
+import { Route as AuthenticatedBookingSuccessPnrRouteImport } from './routes/_authenticated/booking.success.$pnr'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -54,6 +57,18 @@ const AuthenticatedPassengersRoute = AuthenticatedPassengersRouteImport.update({
   path: '/passengers',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBookScheduleIdRoute =
+  AuthenticatedBookScheduleIdRouteImport.update({
+    id: '/book/$scheduleId',
+    path: '/book/$scheduleId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedPaymentReservationIdRoute =
+  AuthenticatedPaymentReservationIdRouteImport.update({
+    id: '/payment/$reservationId',
+    path: '/payment/$reservationId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedSearchIndexRoute =
   AuthenticatedSearchIndexRouteImport.update({
     id: '/search/',
@@ -71,6 +86,12 @@ const AuthenticatedTrainsIdRoute = AuthenticatedTrainsIdRouteImport.update({
   path: '/trains/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBookingSuccessPnrRoute =
+  AuthenticatedBookingSuccessPnrRouteImport.update({
+    id: '/booking/success/$pnr',
+    path: '/booking/success/$pnr',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -79,9 +100,12 @@ export interface FileRoutesByFullPath {
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRouteRoute
   '/passengers': typeof AuthenticatedPassengersRoute
+  '/book/$scheduleId': typeof AuthenticatedBookScheduleIdRoute
+  '/payment/$reservationId': typeof AuthenticatedPaymentReservationIdRoute
   '/search/results': typeof AuthenticatedSearchResultsRoute
   '/trains/$id': typeof AuthenticatedTrainsIdRoute
   '/search/': typeof AuthenticatedSearchIndexRoute
+  '/booking/success/$pnr': typeof AuthenticatedBookingSuccessPnrRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -90,9 +114,12 @@ export interface FileRoutesByTo {
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRouteRoute
   '/passengers': typeof AuthenticatedPassengersRoute
+  '/book/$scheduleId': typeof AuthenticatedBookScheduleIdRoute
+  '/payment/$reservationId': typeof AuthenticatedPaymentReservationIdRoute
   '/search/results': typeof AuthenticatedSearchResultsRoute
   '/trains/$id': typeof AuthenticatedTrainsIdRoute
   '/search': typeof AuthenticatedSearchIndexRoute
+  '/booking/success/$pnr': typeof AuthenticatedBookingSuccessPnrRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -103,9 +130,12 @@ export interface FileRoutesById {
   '/unauthorized': typeof UnauthorizedRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRoute
   '/_authenticated/passengers': typeof AuthenticatedPassengersRoute
+  '/_authenticated/book/$scheduleId': typeof AuthenticatedBookScheduleIdRoute
+  '/_authenticated/payment/$reservationId': typeof AuthenticatedPaymentReservationIdRoute
   '/_authenticated/search/results': typeof AuthenticatedSearchResultsRoute
   '/_authenticated/trains/$id': typeof AuthenticatedTrainsIdRoute
   '/_authenticated/search/': typeof AuthenticatedSearchIndexRoute
+  '/_authenticated/booking/success/$pnr': typeof AuthenticatedBookingSuccessPnrRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -116,9 +146,12 @@ export interface FileRouteTypes {
     | '/unauthorized'
     | '/admin'
     | '/passengers'
+    | '/book/$scheduleId'
+    | '/payment/$reservationId'
     | '/search/results'
     | '/trains/$id'
     | '/search/'
+    | '/booking/success/$pnr'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -127,9 +160,12 @@ export interface FileRouteTypes {
     | '/unauthorized'
     | '/admin'
     | '/passengers'
+    | '/book/$scheduleId'
+    | '/payment/$reservationId'
     | '/search/results'
     | '/trains/$id'
     | '/search'
+    | '/booking/success/$pnr'
   id:
     | '__root__'
     | '/'
@@ -139,9 +175,12 @@ export interface FileRouteTypes {
     | '/unauthorized'
     | '/_authenticated/admin'
     | '/_authenticated/passengers'
+    | '/_authenticated/book/$scheduleId'
+    | '/_authenticated/payment/$reservationId'
     | '/_authenticated/search/results'
     | '/_authenticated/trains/$id'
     | '/_authenticated/search/'
+    | '/_authenticated/booking/success/$pnr'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -203,6 +242,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPassengersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/book/$scheduleId': {
+      id: '/_authenticated/book/$scheduleId'
+      path: '/book/$scheduleId'
+      fullPath: '/book/$scheduleId'
+      preLoaderRoute: typeof AuthenticatedBookScheduleIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/payment/$reservationId': {
+      id: '/_authenticated/payment/$reservationId'
+      path: '/payment/$reservationId'
+      fullPath: '/payment/$reservationId'
+      preLoaderRoute: typeof AuthenticatedPaymentReservationIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/search/': {
       id: '/_authenticated/search/'
       path: '/search'
@@ -224,23 +277,37 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTrainsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/booking/success/$pnr': {
+      id: '/_authenticated/booking/success/$pnr'
+      path: '/booking/success/$pnr'
+      fullPath: '/booking/success/$pnr'
+      preLoaderRoute: typeof AuthenticatedBookingSuccessPnrRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRoute
   AuthenticatedPassengersRoute: typeof AuthenticatedPassengersRoute
+  AuthenticatedBookScheduleIdRoute: typeof AuthenticatedBookScheduleIdRoute
+  AuthenticatedPaymentReservationIdRoute: typeof AuthenticatedPaymentReservationIdRoute
   AuthenticatedSearchResultsRoute: typeof AuthenticatedSearchResultsRoute
   AuthenticatedTrainsIdRoute: typeof AuthenticatedTrainsIdRoute
   AuthenticatedSearchIndexRoute: typeof AuthenticatedSearchIndexRoute
+  AuthenticatedBookingSuccessPnrRoute: typeof AuthenticatedBookingSuccessPnrRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRoute,
   AuthenticatedPassengersRoute: AuthenticatedPassengersRoute,
+  AuthenticatedBookScheduleIdRoute: AuthenticatedBookScheduleIdRoute,
+  AuthenticatedPaymentReservationIdRoute:
+    AuthenticatedPaymentReservationIdRoute,
   AuthenticatedSearchResultsRoute: AuthenticatedSearchResultsRoute,
   AuthenticatedTrainsIdRoute: AuthenticatedTrainsIdRoute,
   AuthenticatedSearchIndexRoute: AuthenticatedSearchIndexRoute,
+  AuthenticatedBookingSuccessPnrRoute: AuthenticatedBookingSuccessPnrRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
