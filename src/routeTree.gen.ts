@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedPassengersRouteImport } from './routes/_authenticated/passengers'
 import { Route as AuthenticatedSearchIndexRouteImport } from './routes/_authenticated/search/index'
 import { Route as AuthenticatedSearchResultsRouteImport } from './routes/_authenticated/search/results'
 import { Route as AuthenticatedTrainsIdRouteImport } from './routes/_authenticated/trains.$id'
@@ -48,6 +49,11 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPassengersRoute = AuthenticatedPassengersRouteImport.update({
+  id: '/passengers',
+  path: '/passengers',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedSearchIndexRoute =
   AuthenticatedSearchIndexRouteImport.update({
     id: '/search/',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRouteRoute
+  '/passengers': typeof AuthenticatedPassengersRoute
   '/search/results': typeof AuthenticatedSearchResultsRoute
   '/trains/$id': typeof AuthenticatedTrainsIdRoute
   '/search/': typeof AuthenticatedSearchIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRouteRoute
+  '/passengers': typeof AuthenticatedPassengersRoute
   '/search/results': typeof AuthenticatedSearchResultsRoute
   '/trains/$id': typeof AuthenticatedTrainsIdRoute
   '/search': typeof AuthenticatedSearchIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRoute
+  '/_authenticated/passengers': typeof AuthenticatedPassengersRoute
   '/_authenticated/search/results': typeof AuthenticatedSearchResultsRoute
   '/_authenticated/trains/$id': typeof AuthenticatedTrainsIdRoute
   '/_authenticated/search/': typeof AuthenticatedSearchIndexRoute
@@ -106,6 +115,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/unauthorized'
     | '/admin'
+    | '/passengers'
     | '/search/results'
     | '/trains/$id'
     | '/search/'
@@ -116,6 +126,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/unauthorized'
     | '/admin'
+    | '/passengers'
     | '/search/results'
     | '/trains/$id'
     | '/search'
@@ -127,6 +138,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/unauthorized'
     | '/_authenticated/admin'
+    | '/_authenticated/passengers'
     | '/_authenticated/search/results'
     | '/_authenticated/trains/$id'
     | '/_authenticated/search/'
@@ -184,6 +196,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/passengers': {
+      id: '/_authenticated/passengers'
+      path: '/passengers'
+      fullPath: '/passengers'
+      preLoaderRoute: typeof AuthenticatedPassengersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/search/': {
       id: '/_authenticated/search/'
       path: '/search'
@@ -210,6 +229,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRoute
+  AuthenticatedPassengersRoute: typeof AuthenticatedPassengersRoute
   AuthenticatedSearchResultsRoute: typeof AuthenticatedSearchResultsRoute
   AuthenticatedTrainsIdRoute: typeof AuthenticatedTrainsIdRoute
   AuthenticatedSearchIndexRoute: typeof AuthenticatedSearchIndexRoute
@@ -217,6 +237,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRoute,
+  AuthenticatedPassengersRoute: AuthenticatedPassengersRoute,
   AuthenticatedSearchResultsRoute: AuthenticatedSearchResultsRoute,
   AuthenticatedTrainsIdRoute: AuthenticatedTrainsIdRoute,
   AuthenticatedSearchIndexRoute: AuthenticatedSearchIndexRoute,
