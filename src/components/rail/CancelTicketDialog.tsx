@@ -42,7 +42,7 @@ export function CancelTicketDialog({ reservation, open, onOpenChange, asAdmin = 
       description="This cannot be undone. All passengers on this ticket will be cancelled and the seats released."
       confirmLabel="Confirm cancellation"
       destructive
-      onConfirm={() => confirm().catch(() => { /* keep dialog open */ throw new Error("keep-open"); })}
+      onConfirm={confirm}
     >
       <div className="space-y-3">
         <div className="rounded-lg border bg-muted/40 p-3 text-sm">

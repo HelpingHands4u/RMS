@@ -25,7 +25,7 @@ export function ConfirmDialog({ open, onOpenChange, title, description, confirmL
             onClick={async (e) => {
               e.preventDefault();
               setBusy(true);
-              try { await onConfirm(); onOpenChange(false); } finally { setBusy(false); }
+              try { await onConfirm(); onOpenChange(false); } catch { /* error already reported; keep dialog open */ } finally { setBusy(false); }
             }}
           >
             {busy ? "Please wait…" : confirmLabel}
