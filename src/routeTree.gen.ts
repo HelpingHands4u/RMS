@@ -18,6 +18,7 @@ import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authentic
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedPassengersRouteImport } from './routes/_authenticated/passengers'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedBookScheduleIdRouteImport } from './routes/_authenticated/book.$scheduleId'
 import { Route as AuthenticatedBookingsIndexRouteImport } from './routes/_authenticated/bookings.index'
 import { Route as AuthenticatedBookingsPnrRouteImport } from './routes/_authenticated/bookings.$pnr'
@@ -70,6 +71,11 @@ const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
 const AuthenticatedBookScheduleIdRoute =
   AuthenticatedBookScheduleIdRouteImport.update({
@@ -124,7 +130,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/passengers': typeof AuthenticatedPassengersRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -133,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/payment/$reservationId': typeof AuthenticatedPaymentReservationIdRoute
   '/search/results': typeof AuthenticatedSearchResultsRoute
   '/trains/$id': typeof AuthenticatedTrainsIdRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/bookings/': typeof AuthenticatedBookingsIndexRoute
   '/search/': typeof AuthenticatedSearchIndexRoute
   '/booking/success/$pnr': typeof AuthenticatedBookingSuccessPnrRoute
@@ -142,7 +149,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/passengers': typeof AuthenticatedPassengersRoute
   '/profile': typeof AuthenticatedProfileRoute
@@ -151,6 +157,7 @@ export interface FileRoutesByTo {
   '/payment/$reservationId': typeof AuthenticatedPaymentReservationIdRoute
   '/search/results': typeof AuthenticatedSearchResultsRoute
   '/trains/$id': typeof AuthenticatedTrainsIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/bookings': typeof AuthenticatedBookingsIndexRoute
   '/search': typeof AuthenticatedSearchIndexRoute
   '/booking/success/$pnr': typeof AuthenticatedBookingSuccessPnrRoute
@@ -162,7 +169,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRouteRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/passengers': typeof AuthenticatedPassengersRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
@@ -171,6 +178,7 @@ export interface FileRoutesById {
   '/_authenticated/payment/$reservationId': typeof AuthenticatedPaymentReservationIdRoute
   '/_authenticated/search/results': typeof AuthenticatedSearchResultsRoute
   '/_authenticated/trains/$id': typeof AuthenticatedTrainsIdRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/bookings/': typeof AuthenticatedBookingsIndexRoute
   '/_authenticated/search/': typeof AuthenticatedSearchIndexRoute
   '/_authenticated/booking/success/$pnr': typeof AuthenticatedBookingSuccessPnrRoute
@@ -191,6 +199,7 @@ export interface FileRouteTypes {
     | '/payment/$reservationId'
     | '/search/results'
     | '/trains/$id'
+    | '/admin/'
     | '/bookings/'
     | '/search/'
     | '/booking/success/$pnr'
@@ -200,7 +209,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/unauthorized'
-    | '/admin'
     | '/dashboard'
     | '/passengers'
     | '/profile'
@@ -209,6 +217,7 @@ export interface FileRouteTypes {
     | '/payment/$reservationId'
     | '/search/results'
     | '/trains/$id'
+    | '/admin'
     | '/bookings'
     | '/search'
     | '/booking/success/$pnr'
@@ -228,6 +237,7 @@ export interface FileRouteTypes {
     | '/_authenticated/payment/$reservationId'
     | '/_authenticated/search/results'
     | '/_authenticated/trains/$id'
+    | '/_authenticated/admin/'
     | '/_authenticated/bookings/'
     | '/_authenticated/search/'
     | '/_authenticated/booking/success/$pnr'
@@ -306,6 +316,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/book/$scheduleId': {
       id: '/_authenticated/book/$scheduleId'
       path: '/book/$scheduleId'
@@ -365,8 +382,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRoute
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPassengersRoute: typeof AuthenticatedPassengersRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
@@ -381,7 +412,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRoute,
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPassengersRoute: AuthenticatedPassengersRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
