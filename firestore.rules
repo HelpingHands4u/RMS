@@ -1,0 +1,136 @@
+rules_version = '2';
+
+// RailReserve — Firestore Security Rules (academic project)
+// Principles:
+//  * Nothing is readable/writable without signing in.
+//  * Admin = users/{uid}.role == 'ADMIN' AND status == 'ACTIVE'. The role is
+//    read from Firestore on the server side of the rules — never from the client.
+//  * Passengers can only touch documents whose userId equals their own uid.
+//  * Railway master data is read-only for passengers.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+    function userDoc() { return get(/databases/$(database)/documents/users/$(uid())); }
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(uid()))
+        && userDoc().data.role == 'ADMIN'
+        && userDoc().data.status == 'ACTIVE';
+    }
+    function ownsExisting() { return signedIn() && resource.data.userId == uid(); }
+    function ownsNew() { return signedIn() && request.resource.data.userId == uid(); }
+    function onlyChanges(keys) { return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys); }
+    function reservation(id) { return get(/databases/$(database)/documents/reservations/$(id)); }
+    function reservationAfter(id) { return getAfter(/databases/$(database)/documents/reservations/$(id)); }
+
+    // ---------- users ----------
+    match /users/{userId} {
+      allow read: if signedIn() && (uid() == userId || isAdmin());
+      // Self-registration can only ever create a PASSENGER.
+      allow create: if signedIn() && uid() == userId
+        && request.resource.data.role == 'PASSENGER'
+        && request.resource.data.status == 'ACTIVE';
+      // Users may edit their own profile but never role/status/email.
+      allow update: if (signedIn() && uid() == userId
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.email == resource.data.email)
+        || isAdmin();
+      allow delete: if false;
+    }
+
+    // ---------- railway master data ----------
+    match /trains/{id}      { allow read: if signedIn(); allow create, update: if isAdmin(); allow delete: if false; }
+    match /stations/{id}    { allow read: if signedIn(); allow create, update: if isAdmin(); allow delete: if false; }
+    match /routes/{id}      { allow read: if signedIn(); allow create, update: if isAdmin(); allow delete: if false; }
+    match /trainRoutes/{id} { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /schedules/{id}   { allow read: if signedIn(); allow create, update: if isAdmin(); allow delete: if false; }
+    match /coaches/{id}     { allow read: if signedIn(); allow create, update: if isAdmin(); allow delete: if false; }
+    match /seats/{id}       { allow read: if signedIn(); allow create, update: if isAdmin(); allow delete: if false; }
+
+    // ---------- passenger profiles ----------
+    match /passengers/{id} {
+      allow read: if ownsExisting() || isAdmin();
+      allow create: if ownsNew();
+      allow update: if ownsExisting() && request.resource.data.userId == resource.data.userId;
+      allow delete: if ownsExisting();
+    }
+
+    // ---------- reservations (document ID == PNR) ----------
+    match /reservations/{pnr} {
+      // resource == null lets the booking transaction verify a PNR is unused.
+      allow read: if signedIn() && (resource == null || resource.data.userId == uid() || isAdmin());
+      allow create: if ownsNew()
+        && request.resource.data.pnr == pnr
+        && request.resource.data.bookingStatus == 'PENDING'
+        && request.resource.data.paymentStatus == 'PENDING'
+        && request.resource.data.totalFare > 0;
+      // Owner may: confirm (only with a matching SUCCESS payment), mark payment FAILED, or cancel.
+      allow update: if isAdmin() || (ownsExisting()
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.totalFare == resource.data.totalFare
+        && request.resource.data.pnr == resource.data.pnr
+        && onlyChanges(['bookingStatus', 'paymentStatus', 'paymentId', 'updatedAt'])
+        && (
+          (request.resource.data.bookingStatus == 'CONFIRMED'
+            && resource.data.bookingStatus == 'PENDING'
+            && getAfter(/databases/$(database)/documents/payments/$(request.resource.data.paymentId)).data.paymentStatus == 'SUCCESS'
+            && getAfter(/databases/$(database)/documents/payments/$(request.resource.data.paymentId)).data.amount == resource.data.totalFare)
+          || (request.resource.data.bookingStatus == 'PENDING' && request.resource.data.paymentStatus == 'FAILED')
+          || (request.resource.data.bookingStatus == 'CANCELLED' && resource.data.bookingStatus != 'CANCELLED')
+        ));
+      allow delete: if false;
+    }
+
+    match /reservationPassengers/{id} {
+      allow read: if ownsExisting() || isAdmin();
+      allow create: if ownsNew() && reservationAfter(request.resource.data.reservationId).data.userId == uid();
+      allow update: if (ownsExisting() || isAdmin()) && onlyChanges(['status']) && request.resource.data.status == 'CANCELLED';
+      allow delete: if false;
+    }
+
+    // ---------- seat locks: one doc per occupied seat per schedule ----------
+    // Any signed-in user may read (needed to compute availability); docs hold no personal data.
+    match /seatLocks/{lockId} {
+      allow read: if signedIn();
+      allow create: if ownsNew()
+        && lockId == request.resource.data.scheduleId + '_' + request.resource.data.seatId
+        && reservationAfter(request.resource.data.reservationId).data.userId == uid();
+      allow update: if false;
+      allow delete: if ownsExisting() || isAdmin();
+    }
+
+    // ---------- payments (document ID == transaction ID) — SIMULATED ----------
+    match /payments/{txnId} {
+      allow read: if signedIn() && (resource == null || resource.data.userId == uid() || isAdmin());
+      allow create: if ownsNew()
+        && request.resource.data.transactionId == txnId
+        && request.resource.data.amount == reservation(request.resource.data.reservationId).data.totalFare
+        && reservation(request.resource.data.reservationId).data.userId == uid()
+        && request.resource.data.paymentStatus in ['SUCCESS', 'FAILED'];
+      allow update: if (ownsExisting() || isAdmin())
+        && onlyChanges(['refundAmount', 'refundStatus', 'paymentStatus', 'updatedAt'])
+        && request.resource.data.refundAmount <= resource.data.amount;
+      allow delete: if false;
+    }
+
+    // ---------- cancellations (document ID == reservation ID, 1:1) ----------
+    match /cancellations/{reservationId} {
+      allow read: if ownsExisting() || isAdmin();
+      allow create: if signedIn()
+        && (reservation(reservationId).data.userId == uid() || isAdmin())
+        && request.resource.data.userId == reservation(reservationId).data.userId
+        && request.resource.data.refundAmount <= reservation(reservationId).data.totalFare;
+      allow update, delete: if false;
+    }
+
+    // ---------- audit logs ----------
+    match /auditLogs/{id} {
+      allow read: if isAdmin();
+      allow create: if signedIn() && request.resource.data.userId == uid();
+      allow update, delete: if false;
+    }
+  }
+}
