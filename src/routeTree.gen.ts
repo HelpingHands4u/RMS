@@ -15,6 +15,9 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
+import { Route as AuthenticatedSearchIndexRouteImport } from './routes/_authenticated/search/index'
+import { Route as AuthenticatedSearchResultsRouteImport } from './routes/_authenticated/search/results'
+import { Route as AuthenticatedTrainsIdRouteImport } from './routes/_authenticated/trains.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -45,6 +48,23 @@ const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSearchIndexRoute =
+  AuthenticatedSearchIndexRouteImport.update({
+    id: '/search/',
+    path: '/search/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedSearchResultsRoute =
+  AuthenticatedSearchResultsRouteImport.update({
+    id: '/search/results',
+    path: '/search/results',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTrainsIdRoute = AuthenticatedTrainsIdRouteImport.update({
+  id: '/trains/$id',
+  path: '/trains/$id',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -52,6 +72,9 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRouteRoute
+  '/search/results': typeof AuthenticatedSearchResultsRoute
+  '/trains/$id': typeof AuthenticatedTrainsIdRoute
+  '/search/': typeof AuthenticatedSearchIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -59,6 +82,9 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/admin': typeof AuthenticatedAdminRouteRoute
+  '/search/results': typeof AuthenticatedSearchResultsRoute
+  '/trains/$id': typeof AuthenticatedTrainsIdRoute
+  '/search': typeof AuthenticatedSearchIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -68,12 +94,31 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/unauthorized': typeof UnauthorizedRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRoute
+  '/_authenticated/search/results': typeof AuthenticatedSearchResultsRoute
+  '/_authenticated/trains/$id': typeof AuthenticatedTrainsIdRoute
+  '/_authenticated/search/': typeof AuthenticatedSearchIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register' | '/unauthorized' | '/admin'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/unauthorized'
+    | '/admin'
+    | '/search/results'
+    | '/trains/$id'
+    | '/search/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/unauthorized' | '/admin'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/unauthorized'
+    | '/admin'
+    | '/search/results'
+    | '/trains/$id'
+    | '/search'
   id:
     | '__root__'
     | '/'
@@ -82,6 +127,9 @@ export interface FileRouteTypes {
     | '/register'
     | '/unauthorized'
     | '/_authenticated/admin'
+    | '/_authenticated/search/results'
+    | '/_authenticated/trains/$id'
+    | '/_authenticated/search/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -136,15 +184,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/search/': {
+      id: '/_authenticated/search/'
+      path: '/search'
+      fullPath: '/search/'
+      preLoaderRoute: typeof AuthenticatedSearchIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/search/results': {
+      id: '/_authenticated/search/results'
+      path: '/search/results'
+      fullPath: '/search/results'
+      preLoaderRoute: typeof AuthenticatedSearchResultsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/trains/$id': {
+      id: '/_authenticated/trains/$id'
+      path: '/trains/$id'
+      fullPath: '/trains/$id'
+      preLoaderRoute: typeof AuthenticatedTrainsIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRoute
+  AuthenticatedSearchResultsRoute: typeof AuthenticatedSearchResultsRoute
+  AuthenticatedTrainsIdRoute: typeof AuthenticatedTrainsIdRoute
+  AuthenticatedSearchIndexRoute: typeof AuthenticatedSearchIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRoute,
+  AuthenticatedSearchResultsRoute: AuthenticatedSearchResultsRoute,
+  AuthenticatedTrainsIdRoute: AuthenticatedTrainsIdRoute,
+  AuthenticatedSearchIndexRoute: AuthenticatedSearchIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
