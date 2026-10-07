@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
-import { Logo } from "@/components/rail/bits";
+import { AuthFrame } from "@/components/rail/AuthFrame";
 import { FirebaseSetupNotice } from "@/components/rail/FirebaseSetupNotice";
 import { toUserMessage } from "@/utils/errors";
 
@@ -24,29 +24,6 @@ export const Route = createFileRoute("/login")({
 });
 
 const schema = z.object({ email: z.string().trim().email("Enter a valid email"), password: z.string().min(6, "Password must be at least 6 characters") });
-
-export function AuthFrame({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
-  return (
-    <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="relative hidden flex-col justify-between bg-sidebar p-10 text-sidebar-foreground lg:flex">
-        <Logo light />
-        <div>
-          <p className="font-display text-4xl font-extrabold leading-tight">Every seat, accounted for.</p>
-          <p className="mt-3 max-w-sm text-sidebar-foreground/70">Search routes, see real seat availability, book and cancel — all backed by a live database.</p>
-        </div>
-        <p className="text-xs text-sidebar-foreground/50">Academic Simulation • Not connected to IRCTC</p>
-      </div>
-      <div className="flex items-center justify-center p-6">
-        <div className="w-full max-w-sm">
-          <div className="mb-8 lg:hidden"><Logo /></div>
-          <h1 className="text-2xl font-bold">{title}</h1>
-          <p className="mb-6 mt-1 text-sm text-muted-foreground">{subtitle}</p>
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function LoginPage() {
   const { login, user, configured, loading } = useAuth();

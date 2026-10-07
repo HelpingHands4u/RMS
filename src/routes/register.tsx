@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { FirebaseSetupNotice } from "@/components/rail/FirebaseSetupNotice";
 import { toUserMessage } from "@/utils/errors";
-import { AuthFrame } from "./login";
+import { AuthFrame } from "@/components/rail/AuthFrame";
 
 export const Route = createFileRoute("/register")({
   head: () => ({
