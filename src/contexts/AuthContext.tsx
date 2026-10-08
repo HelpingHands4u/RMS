@@ -29,9 +29,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!u) return setProfile(null);
     try {
       setProfile(await userService.ensureProfile(u.uid, u.email ?? "", u.displayName ?? ""));
-    } catch {
-      setProfile(null);
-    }
+     } catch (error) {
+  console.error("❌ Failed to load/create Firestore user profile:", error);
+  setProfile(null);
+}
   }, []);
 
   useEffect(() => {
